@@ -6,239 +6,172 @@ namespace PetSim
 
     class Program
     {
-
-        static void ChooseEgg(Egg myEgg)
+        //Function to ask player if wants to keep playing
+        static bool KeepPlaying(string  Msg)
         {
-            bool error = false;
-            Console.WriteLine("Please select the color of the egg you would like: ");
-            Console.WriteLine("1 - White \n"
-                + "2 - Red \n"
-                + "3 - Blue \n"
-                + "4 - Green \n"
-                + "5 - Yellow \n"
-                );
+            Console.WriteLine("{0} Type Y if you want to play, else type anything: ", Msg);
+            string option = Console.ReadLine();
 
-            //Cycle until a valid option is typed
-            do
+            if (!(option.ToLower() == "y" || option.ToLower() == "yes"))
             {
-                //Protect code from exceptions
-                try
-                {
-                    int option = int.Parse(Console.ReadLine());
-
-                    switch (option)
-                    {
-                        case 1:
-                            myEgg.Color = "white";
-                            error = false;
-                            break;
-
-                        case 2:
-                            myEgg.Color = "red";
-                            error = false;
-                            break;
-
-                        case 3:
-                            myEgg.Color = "blue";
-                            error = false;
-                            break;
-
-                        case 4:
-                            myEgg.Color = "green";
-                            error = false;
-                            break;
-
-                        case 5:
-                            myEgg.Color = "yellow";
-                            error = false;
-                            break;
-
-                        default:
-                            Console.WriteLine("Please type a valid option");
-                            error = true;
-                            break;
-                    }
-                } 
-                //If user types a non integer
-                catch (FormatException)
-                {
-                    Console.WriteLine("Error: Typed an unrecognized symbol, please type a valid number");
-                    error = true;
-                }
-                //protecting code if any other exception is found
-                catch (Exception except)
-                {
-                    Console.WriteLine(except.Message);
-                    error = true;
-                }
-            } while (error == true);
-
-            Console.WriteLine("Your selected color was: {0} \n", myEgg.Color);
-
+                //The player doesn't want to play
+                return false;
+            }
+            return true;
         }
 
-        static void PetNaming(Pet p)
+        //function to change text color
+        static void DialogColor(string Colour)
         {
-            //Pet naming
-            Console.WriteLine("Please choose a name for your new {0} buddy: ", p.Species);
-            p.Name = Console.ReadLine();
-            Console.WriteLine("Your pet's name is: {0} \n", p.Name);
-        }
-
-        static bool ChooseAction(Pet p, int money)
-        {
-            try
-            {
-                Console.WriteLine(" what would you like to do with your pet? \n (Choose an option)");
-
-                Console.WriteLine("1 - Feed!");
-                //Variable Results
-                Console.WriteLine("2 - Compete in race!");
-
-                Console.WriteLine("3 - Rest!");
-
-                Console.WriteLine("4 - Walk!");
-
-                Console.WriteLine("5 - Send to a party!");
-
-                int op = int.Parse(Console.ReadLine());
-
-                //Check until a valid option was selected
-                switch (op)
-                {
-                    case 1:
-                        if (money < 10)
-                        {   
-                            Console.WriteLine("Your actual balance is ${0} and food costs $10... You can't buy food!", money);
-                            return true;
-                        }
-                        else
-                        {
-                            money = p.Eat(money);
-                            return false;
-                        }
-                    case 2:
-                        p.CompeteRace();
-                        return false;
-                    case 3:
-                        p.Rest();
-                        return false;
-                    case 4:
-                        p.Walk();
-                        return false;
-                    case 5:
-                        money = p.SendParty(money);
-                        return false;
-                    default:
-                        Console.WriteLine("Error: {0} is confused, Please type a valid option", p.Name);
-                        return true;
-                }
+            switch (Colour.ToLower()){
+                case "narrator":
+                    //Narrator Color dialog
+                    Console.ForegroundColor = ConsoleColor.White;
+                    return;
+                case "pet":
+                    //Pet color dialog
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    return;
+                case "money":
+                    //Money displaying color
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    return;
+                default:
+                    return;
             }
-            catch (FormatException)
-            {
-                Console.WriteLine("Error: Type a number between 1-5!");
-                return true;
-            }
-        } 
-
-        static int Action(Pet mascot, int daytime, int money)
-        {
-            bool err = false;
-            string MsgMorning = "Time to get up! ";
-            string MsgEvening = "Now is evening, ";
-
-            if(mascot.Tired >= 80)
-            {
-                Console.WriteLine("Wait... {1} seems exhausted... Let him/her rest... \n", mascot.Name);
-                mascot.Tired -= 20;
-            } else
-            {    
-                do
-                {
-                    //Morning
-                    if (daytime == 0)
-                    {
-                        Console.Write(MsgMorning);
-                    }
-                    //Evening
-                    else
-                    {
-                        Console.Write(MsgEvening);
-                    }
-
-                    err = ChooseAction(mascot, money);
-                    
-                } while (err);
-            }
-            return money;
         }
 
         static void Main(string[] args)
         {
-            //Greet and ask user if he wants to play
-            Console.WriteLine("Welcome to Pet Sim Game! Type Y if you want to play, else type anything: ");
-            string option = Console.ReadLine();
-
             //Flag for player to start or continue playing
             bool play = true;
 
-            //Money counter (each player starts with $20)
-            int money = 20;
+            //Instantiate player
+            Player player1 = new Player();
 
-            //pet counter
-            int petcount = 0;
+            //limit of pets per game
+            const int petLimit = 5;
 
             //instantiate egg object
             Egg myEgg = new Egg();
 
             //Pet array
-            Pet[] pinata = new Pet[30];
+            Pet[] pinata = new Pet[petLimit];
 
-            //day counter
-            int day = 0;
+            //boolean for player naming
+            bool nameDone = false;
 
             //Flag to determine if pet is still active (alive and hasn't run away)
             bool active = true;
 
+            //Greet and ask user if he wants to play
+            //Intro message
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            string Msg = "Welcome to picturesque Pinata Island! \n"+
+                "in its many gardens all variety of pinatas live, dance, and dream \n"+
+                "that one day they will be chosen by a human to find a partner and have \n"+
+                "a wonderful life \n";
+            play = KeepPlaying(Msg);
+            
+
             while (play)
             {
 
-                if (!(option.ToLower() == "y" || option.ToLower() == "yes"))
+                //Ask, user's name, if user's name already asked and approved, won't be asked 
+                nameDone = player1.YourName(nameDone);
+
+               //Ask the user for an input to choose the pet's egg
+                player1.ChooseEgg(myEgg);
+
+
+                //Hatch the egg and save specie of the pet
+                myEgg.Hatch();
+
+                pinata[player1.petcount] = new Pet(myEgg.hatchSpecie, myEgg.Rank, myEgg.RealSp, myEgg.Candy);
+
+                Console.WriteLine("Congratulations you got a: {0} pinata", pinata[player1.petcount].Species);
+                player1.PetNaming(pinata[player1.petcount]);
+
+                //While pinata hasn't died or ran away
+                while (active)
                 {
-                    play = false;
+                    //Color of console
+                    DialogColor("Money");
+
+                    //Print user's money
+                    Console.WriteLine("\n ------------------------------------------------------------");
+                    Console.WriteLine("\n Your actual money balance to buy food is: {0} \n", player1.Money);
+                    Console.WriteLine("------------------------------------------------------------ \n");
+
+                    //Color of console to narrator
+                    DialogColor("narrator");
+
+                    //choose morning action (Pet, morning(0) or evening(any other number), money)
+                    player1.Action(pinata[player1.petcount], 0);
+                    //choose evening action
+                    player1.Action(pinata[player1.petcount], 1);
+
+                    //Showing pet status (Debug purposes)
+                    /*
+                    Console.WriteLine("\n Would you like to see {0} status? (Type y if yes, else type anything)", pinata[player1.petcount].Name);
+                    string optionStatus = Console.ReadLine();
+                    if (optionStatus.ToLower() == "y" || optionStatus.ToLower() == "yes")
+                    {
+                        pinata[player1.petcount].PetStatus();
+                    }*/
+
+                    //Pet's response and status
+                    //pet
+                    DialogColor("pet");
+                    active = pinata[player1.petcount].StatusMsgAlive(player1.Name);
+                    player1.Money += pinata[player1.petcount].PopularityToMoney();
+
+                    //Increase pet days
+                    pinata[player1.petcount].DaysAlive++;
+                }
+
+                //Increase number of pets that user had
+                player1.petcount++;
+
+                if ( player1.petcount < petLimit)
+                {
+                    //Narrator
+                    DialogColor("narrator");
+                    //Ask user if he wants to keep playing
+                    play = KeepPlaying("Would you like to keep playing? ");
+                } else
+                {
+                    //Narrator
+                    DialogColor("narrator");
+                    //Game completed at maximum pets
+                    Console.WriteLine("\n Congratulations! You've already had {0} pets! Thank you for playing and please, come again!", player1.petcount);
+                    play = false; 
+                }
+
+                //Set active flag to play with new pet
+                active = true;
+            }
+
+            //Print all Pinatas information and conclusions
+
+            Console.WriteLine("Name \t\t Specie \t\t Inspired Specie \t\t Inspired Candy \t\t Status");
+
+            foreach (Pet pet in pinata)
+            {
+                if(pet == null)
+                {
                     break;
                 }
 
-                ChooseEgg(myEgg);
+                //random colors per line
+                Random rnd = new Random();
+                int randColor = rnd.Next(1, 16);
 
-                pinata[petcount] = new Pet();
+                Console.ForegroundColor = (ConsoleColor)randColor;
 
-                //Hatch the egg and save specie of the pet
-                pinata[petcount].Species = myEgg.Hatch();
-
-                Console.WriteLine("Congratulations you got a: {0} pinata", pinata[petcount].Species);
-                PetNaming(pinata[petcount]);
-
-                while (active)
-                {
-                    //choose morning action (Pet, morning(0) or evening(any other number), money)
-                    money = Action(pinata[petcount], 0, money);
-                    //choose evening action
-                    money = Action(pinata[petcount], 1, money);
-                    //Ask user for showing pet status
-                    Console.WriteLine("Would you like to see {0} status? (Type y if yes, else type anything)", pinata[petcount].Name);
-                    option = Console.ReadLine();
-                    if (option.ToLower() == "y" || option.ToLower() == "yes")
-                    {
-                        pinata[petcount].PetStatus();
-                    }
-                    active = false;
-                }
-
-                play = false;
-
-                petcount++;
+                pet.printInfo();
             }
+
             Console.ReadLine();
         }
     }

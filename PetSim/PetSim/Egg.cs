@@ -4,11 +4,15 @@ using System.Text;
 
 namespace PetSim
 {
-    class Egg
+    public class Egg
     {
         //Getters and setters
         public string Color;
-        public int Rank;
+        //the rank of the pet: Greater rank, greater difficulty for taking care
+        public int Rank { get; private set; }
+        public string hatchSpecie { get; private set; }
+        public string Candy { get; private set; }
+        public string RealSp { get; private set; }
 
         //Constructor
         public Egg()
@@ -17,7 +21,7 @@ namespace PetSim
             Rank = 1;
         }
 
-        public string Hatch()
+        public void Hatch()
         {
             //Generate a random roll for pet rank
             Random rnd = new Random();
@@ -28,40 +32,77 @@ namespace PetSim
                 case "white":
                     if(Rank == 1)
                     {
-                        return "Flutterscotch";
+                        hatchSpecie = "Swanana";
+                        RealSp = "Swan";
+                        Candy = "Banana";
+                        return;
                     }
-                    return "Moozipan";
+                    hatchSpecie = "Moozipan";
+                    RealSp = "Cow";
+                    Candy = "Marzipan";
+
+                    return;
 
                 case "red":
                     if (Rank == 1)
                     {
-                        return "Raisant";
+                        hatchSpecie = "Raisant";
+                        RealSp = "Ant";
+                        Candy = "Raisin";
+                        return;
                     }
-                    return "Pieena";
+                    hatchSpecie = "Pieena";
+                    RealSp = "Hyena";
+                    Candy = "Pie";
 
+                    return;
                 case "blue":
                     if (Rank == 1)
                     {
-                        return "Sherbat";
+                        hatchSpecie = "Sherbat";
+                        RealSp = "Bat";
+                        Candy = "Sherbet";
+                        return;
                     }
-                    return "Horstachio";
+                    hatchSpecie = "Horstachio";
+                    RealSp = "Horse";
+                    Candy = "Pistachio";
+
+                    return;
 
                 case "green":
                     if (Rank == 1)
                     {
-                        return "Fudgehog";
+                        hatchSpecie = "Fudgehog";
+                        RealSp = "Hedgehog";
+                        Candy = "Fudge";
+                        return;
                     }
-                    return "Jameleon";
+                    hatchSpecie = "Jameleon";
+                    RealSp = "Chameleon";
+                    Candy = "Jam";
+
+                    return;
 
                 case "yellow":
                     if (Rank == 1)
                     {
-                        return "Ponocky";
+                        hatchSpecie = "S'morepion";
+                        RealSp = "Scorpion";
+                        Candy = "S'more";
+                        return;
                     }
-                    return "Roario";
+                    hatchSpecie = "Roario";
+                    RealSp = "Lion";
+                    Candy = "Oreo";
 
+                    return;
+                //Since Color was already validated, default status may never be accessed
                 default:
-                    return "Flutterscotch";
+                    hatchSpecie = "Swanana";
+                    RealSp = "Swan";
+                    Candy = "Banana";
+                    return;
             }
         }
     }
